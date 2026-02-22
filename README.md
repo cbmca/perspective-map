@@ -1,36 +1,67 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# PerspectiveMap
+
+An interactive side-by-side comparison of two map projections — **Lambert Azimuthal Equal-Area** and **Mercator** — that lets you re-center the world on any location and see how every flat map distorts reality.
+
+## Why is this interesting?
+
+Every map you've ever seen is a lie. You can't flatten a sphere without stretching something. The Mercator projection — the one on Google Maps, in classrooms, and on most wall maps — preserves angles and shapes but makes countries near the poles look enormous. Greenland appears as large as Africa, when in reality Africa is **14 times larger**.
+
+PerspectiveMap puts two projections side by side so you can see the trade-offs for yourself. Search for your hometown, click anywhere on the globe, and watch how the world reshapes depending on what's at the center. Toggle "Size circles" (Tissot indicatrices) to see equal-area circles balloon on Mercator while staying consistent on the Equal-Area view.
+
+## Features
+
+- **Side-by-side** Equal-Area globe and Mercator rectangular map
+- **Click or search** to re-center both maps simultaneously with smooth animation
+- **Tissot indicatrices** — toggle equal-area circles to visualize distortion
+- **Graticule grid** — toggle latitude/longitude lines
+- **Responsive** — both maps scale to fit the viewport
+- **No API key required** — uses OpenStreetMap Nominatim for geocoding
+
+## Tech Stack
+
+- **Next.js** (App Router) + TypeScript + Tailwind CSS
+- **D3.js** (`d3-geo`) with imperative SVG rendering
+- **world-atlas** (TopoJSON) + `topojson-client`
+- **Nominatim** (OpenStreetMap) for geocoding
+- **lucide-react** for icons
+
+## How it was built
+
+This project was built in a single session (~45 minutes) with Claude Code:
+
+1. **Scaffolded** a Next.js app with TypeScript, Tailwind, and App Router
+2. **Built the data layer** — TopoJSON world boundaries, Tissot circle generator using `d3.geoCircle()`, debounce hook
+3. **Created the LAEA globe** — `d3.geoAzimuthalEqualArea()` with full-sphere rendering, SVG clip paths, click-to-center with animated rotation via `d3.timer` + cubic easing
+4. **Created the Mercator map** — `d3.geoMercator()` rectangular view with the same interaction model
+5. **Assembled the page** — side-by-side layout with shared state, search bar with Nominatim geocoding, toggle controls, and an educational info overlay
+6. **Iterated on UX** — fixed projection rendering bugs, added plain-language explanations, made the interface self-documenting
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3002](http://localhost:3002).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Hosting Options
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Option | Cost | Setup | Best for |
+|--------|------|-------|----------|
+| **Vercel** | Free tier | `npx vercel` — zero config | Easiest, recommended |
+| **GitHub Pages** | Free | Static export (see below) | Already using GH Pages |
+| **Netlify** | Free tier | Connect repo, auto-deploys | Alternative to Vercel |
+| **Cloudflare Pages** | Free tier | Connect repo, select Next.js | Edge performance |
 
-## Learn More
+### Deploy to Vercel (recommended)
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npx vercel
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+That's it. Vercel is built for Next.js — it handles the API route, builds, and CDN automatically.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Static export for GitHub Pages
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+To deploy on GitHub Pages, the geocoding API route needs to move client-side (Nominatim supports CORS). Add `output: 'export'` to `next.config.ts` and call Nominatim directly from the SearchPanel component instead of going through `/api/geocode`.

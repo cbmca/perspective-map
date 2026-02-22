@@ -36,6 +36,10 @@ This project was built in a single session (~45 minutes) with Claude Code:
 5. **Assembled the page** — side-by-side layout with shared state, search bar with Nominatim geocoding, toggle controls, and an educational info overlay
 6. **Iterated on UX** — fixed projection rendering bugs, added plain-language explanations, made the interface self-documenting
 
+## Known Issues
+
+- **Equal-Area map occasionally turns all gray** — When re-centering the LAEA globe, the map sometimes renders as a solid gray field instead of showing the ocean and land correctly. This is a rendering bug related to how D3's azimuthal equal-area projection handles the full-sphere clip boundary (`clipAngle: 180`) during rotation animation. Clicking again or searching for a new location typically recovers the view.
+
 ## Getting Started
 
 ```bash

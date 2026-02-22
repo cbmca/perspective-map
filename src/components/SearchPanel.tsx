@@ -24,8 +24,25 @@ export default function SearchPanel({ onSelect }: Props) {
 
     let cancelled = false;
 
-    fetch(`/api/geocode?q=${encodeURIComponent(debouncedQuery)}`)
+    interface NominatimResult {
+      display_name: string;
+      lat: string;
+      lon: string;
+    }
+
+    fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(debouncedQuery)}&format=json&limit=5`,
+      { headers: { "User-Agent": "PerspectiveMap/1.0" } }
+    )
       .then((r) => r.json())
+      .then((raw: NominatimResult[]) => {
+        const data: GeocodingResult[] = raw.map((r) => ({
+          label: r.display_name,
+          longitude: parseFloat(r.lon),
+          latitude: parseFloat(r.lat),
+        }));
+        return data;
+      })
       .then((data: GeocodingResult[]) => {
         if (!cancelled) {
           setResults(data);

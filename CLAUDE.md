@@ -20,3 +20,15 @@ Interactive Lambert Azimuthal Equal-Area globe built with Next.js + D3.js.
 - `npm run dev` — start dev server
 - `npm run build` — production build
 - `npm run lint` — ESLint
+
+---
+
+## Secrets & Credential Safety
+
+**Zero-tolerance: no API keys, tokens, passwords, or credentials may ever be committed to git.**
+
+- All secrets in `.env.local`; `.gitignore` must exclude `.env*`
+- `.env.local.example` committed with placeholder values only (e.g., `your_api_key_here`)
+- Never `console.log` env vars; log `!!process.env.KEY` or key length instead
+- Before committing, scan `git diff --cached` for secret patterns: API keys, Bearer tokens, 32+ char hex/base64 strings
+- If a secret is accidentally committed: rotate the key immediately, then scrub history with `git-filter-repo` or BFG Repo-Cleaner
